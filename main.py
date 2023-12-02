@@ -1,9 +1,6 @@
 import csv
+import pandas as pd
 
-f = open('archive/Books.csv', 'r')
-rdr = csv.reader(f)
-
-for line in rdr:
-    print(line)
-
-f.close()
+data = pd.read_csv('archive/Ratings.csv', delimiter=';')
+data = data.dropna()
+print(data)
