@@ -14,7 +14,13 @@ book_norm = book.dropna()
 rating_norm = rating.dropna()
 user_norm = user.dropna()
 
-print(book_norm)
-print(rating_norm)
-print(user_norm)
+# 어간 추출
+stemmer = PorterStemmer()
+book_norm['stemmed_title'] = book_norm['Title'].apply(lambda x: ' '.join([stemmer.stem(word) for word in word_tokenize(x)]))
+
+# 표제어 추출
+lemmatizer = WordNetLemmatizer()
+book_norm['lemmatized_title'] = book_norm['Title'].apply(lambda x: ' '.join([lemmatizer.lemmatize(word) for word in word_tokenize(x)]))
+
+book_norm.to_csv('결과파일.csv', index=False)
 
