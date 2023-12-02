@@ -8,18 +8,38 @@ from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
 nltk.download('punkt')
 nltk.download('wordnet')
 
-book = pd.read_csv('archive/Books.csv', delimiter=';')
-rating = pd.read_csv('archive/Ratings.csv', delimiter=';')
-user = pd.read_csv('archive/Users.csv', delimiter=';')
+#book = pd.read_csv('book_stemming_2.csv', delimiter=';')
+#rating = pd.read_csv('archive/Ratings.csv', delimiter=';')
 
-book_norm = book.dropna()
-rating_norm = rating.dropna()
-user_norm = user.dropna()
+#book_norm = book.dropna()
+#rating_norm = rating.dropna()
 
-user_norm = pd.read_csv('user_norm.csv')
-user_norm = user_norm[user_norm['Age'].apply(lambda x: str(x).isdigit())]
-user_norm.to_csv('cleaned_user_norm.csv', index=False)
+user_norm = pd.read_csv('cleaned_user_norm.csv')
 
+# 나이가 80 이상인 데이터를 제외합니다.
+user_norm = user_norm[user_norm['Age'] < 80]
+
+# User-ID와 Age 데이터를 가져옵니다.
+user_ids = user_norm['User-ID']
+ages = user_norm['Age']
+
+# LabelBinarizer를 생성합니다.
+label_binarizer = LabelBinarizer()
+
+# Age 데이터를 원핫인코딩하여 특징 벡터를 생성합니다.
+age_vector = label_binarizer.fit_transform(ages)
+
+# 데이터프레임으로 변환합니다.
+df = pd.DataFrame(age_vector, columns=label_binarizer.classes_)
+
+# User-ID 컬럼을 추가합니다.
+df['User-ID'] = user_ids
+
+# User-ID가 비어있는 데이터를 제거합니다.
+df = df.dropna(subset=['User-ID'])
+
+# CSV 파일로 저장합니다.
+df.to_csv('user_vector.csv', index=False)
 # 어간 추출
 # stemmed_titles = []
 # stemmer = nltk.stem.PorterStemmer()
