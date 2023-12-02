@@ -3,7 +3,7 @@ import nltk
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 import numpy as np
-from sklearn.preprocessing import LabelBinarizer
+from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
 
 nltk.download('punkt')
 nltk.download('wordnet')
@@ -15,7 +15,11 @@ user = pd.read_csv('archive/Users.csv', delimiter=';')
 book_norm = book.dropna()
 rating_norm = rating.dropna()
 user_norm = user.dropna()
-user_norm.to_csv('user_norm.csv', index=False)
+
+user_norm = pd.read_csv('user_norm.csv')
+user_norm = user_norm[user_norm['Age'].apply(lambda x: str(x).isdigit())]
+user_norm.to_csv('cleaned_user_norm.csv', index=False)
+
 # 어간 추출
 # stemmed_titles = []
 # stemmer = nltk.stem.PorterStemmer()
