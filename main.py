@@ -22,5 +22,5 @@ book_norm['stemmed_title'] = book_norm['Title'].apply(lambda x: ' '.join([stemme
 lemmatizer = WordNetLemmatizer()
 book_norm['lemmatized_title'] = book_norm['Title'].apply(lambda x: ' '.join([lemmatizer.lemmatize(word) for word in word_tokenize(x)]))
 
-book_norm.to_csv('결과파일.csv', index=False)
+book_norm.to_csv('book_stemming.csv', index=False)
 
