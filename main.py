@@ -26,6 +26,14 @@ def predict_rating_top_n(rating, item_sim, n=20):
             pred[row, col] /= np.sum(np.abs(item_sim[col, top_n_item]))
 
     return pred
+#읽은 책, 안 읽은 책 구분
+def get_user_unread(rating, use_id):
+    user_rating= rating.loc[use_id, :]
+    already_read= user_rating[user_rating> 0].index.tolist()
+    book_list= rating.columns.tolist()
+    unread_list= [book for book in book_list if book not in already_read]
+    return unread_list
+
 
 df = pd.read_csv('user_norm.csv')
 
@@ -43,7 +51,7 @@ try:
     #rating_pred_2 = predict_rating_top_n(pivot_table.values, df_sim.values, n=20)
     #rating_pred_matrix = pd.DataFrame(data=rating_pred_2, index=pivot_table.index, columns=pivot_table.columns)
     user_rating_id = pivot_table.loc[1, :]
-    user_rating_id[user_rating_id > 0].sort_values(ascending=False)[:10]
+    print(user_rating_id[user_rating_id > 0].sort_values(ascending=False)[:20])
 except KeyboardInterrupt:
-    print("오류가 발생")
+    print("오류 발생")
 
