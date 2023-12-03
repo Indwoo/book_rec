@@ -34,6 +34,10 @@ def get_user_unread(rating, use_id):
     unread_list= [book for book in book_list if book not in already_read]
     return unread_list
 
+#책 추천
+def recommendation(pred_df, use_id, unread_list, top_n= 10):
+    re_book= pred_df.loc[use_id, unread_list].sort_values(ascending= False)[:top_n]
+    return re_book
 
 df = pd.read_csv('user_norm.csv')
 
@@ -48,10 +52,16 @@ rating_pred = predict_rating(pivot_table.values, df_sim.values)
 rating_pred_matrix = pd.DataFrame(data=rating_pred, index=pivot_table.index, columns=pivot_table.columns)
 
 try:
-    #rating_pred_2 = predict_rating_top_n(pivot_table.values, df_sim.values, n=20)
-    #rating_pred_matrix = pd.DataFrame(data=rating_pred_2, index=pivot_table.index, columns=pivot_table.columns)
-    user_rating_id = pivot_table.loc[1, :]
-    print(user_rating_id[user_rating_id > 0].sort_values(ascending=False)[:20])
+    rating_pred_2 = predict_rating_top_n(pivot_table.values, df_sim.values, n=20)
+    rating_pred_matrix = pd.DataFrame(data=rating_pred_2, index=pivot_table.index, columns=pivot_table.columns)
+    #user_rating_id = pivot_table.loc[1, :]
+    #print(user_rating_id[user_rating_id > 0].sort_values(ascending=False)[:20])
+    unread_list = get_user_unread(pivot_table, 9)
+    re_book = recommendation(rating_pred_matrix, 9, unread_list, top_n=10)
+    df_re_book = pd.DataFrame(data=re_book.values, index=re_book.index, columns=["pred_score"])
+    print(df_re_book)
+
+
 except KeyboardInterrupt:
     print("오류 발생")
 
