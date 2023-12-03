@@ -9,11 +9,26 @@ def predict_rating(rating, item_sim):
     rating_pred = rating.dot(item_sim) / np.array([np.abs(item_sim).sum(axis=1)])
     return rating_pred
 
+
 # MSE 함수
 def mse(pred, actual):
     pred = pred[actual.nonzero()].flatten()
     actual = actual[actual.nonzero()].flatten()
     return mean_squared_error(pred, actual)
+
+
+# MSE 개선 함수
+def predict_rating_top_n(rating, item_sim, n=20):
+    pred = np.zeros(rating.shape)
+
+    for col in range(rating.shape[1]):
+        top_n_item = [np.argsort(item_sim[:, col])[:-n - 1:-1]]
+        for row in range(rating.shape[0]):
+            pred[row, col] = item_sim[col, :][top_n_item].dot(rating[row, :][top_n_item].T)
+            pred[row, col] /= np.sum(np.abs(item_sim[col, :][top_n_item]))
+
+    return pred
+
 
 df = pd.read_csv('user_norm.csv')
 
