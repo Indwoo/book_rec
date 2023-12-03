@@ -3,17 +3,20 @@ import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics import mean_squared_error
 
+
 # 추천 행렬 함수
 def predict_rating(rating, item_sim):
     rating_pred = rating.dot(item_sim) / np.array([np.abs(item_sim).sum(axis=1)])
     rating_pred[np.isnan(rating_pred)] = 0  # 0으로 나누는 경우에 대한 예외 처리
     return rating_pred
 
+
 # MSE 함수
 def mse(pred, actual):
     pred = pred[actual.nonzero()].flatten()
     actual = actual[actual.nonzero()].flatten()
     return mean_squared_error(pred, actual)
+
 
 # MSE 개선 함수
 def predict_rating_top_n(rating, item_sim, n=20):
@@ -26,19 +29,22 @@ def predict_rating_top_n(rating, item_sim, n=20):
             pred[row, col] /= np.sum(np.abs(item_sim[col, top_n_item]))
 
     return pred
-#읽은 책, 안 읽은 책 구분
+
+
+# 읽은 책, 안 읽은 책 구분
 def get_user_unread(rating, use_id):
-    user_rating= rating.loc[use_id, :]
-    already_read= user_rating[user_rating> 0].index.tolist()
-    book_list= rating.columns.tolist()
-    unread_list= [book for book in book_list if book not in already_read]
+    user_rating = rating.loc[use_id, :]
+    already_read = user_rating[user_rating > 0].index.tolist()
+    book_list = rating.columns.tolist()
+    unread_list = [book for book in book_list if book not in already_read]
     return unread_list
 
-#책 추천
-def recommendation(pred_df, use_id, unread_list, top_n= 10):
-    re_book= pred_df.loc[use_id, unread_list].sort_values(ascending= False)[:top_n]
+# 책 추천
+def recommendation(pred_df, use_id, unread_list, top_n=10):
+    re_book = pred_df.loc[use_id, unread_list].sort_values(ascending=False)[:top_n]
     return re_book
 
+# user_norm : ID/Name/Rating
 df = pd.read_csv('user_norm.csv')
 
 pivot_table = pd.pivot_table(df, values='Rating', index='ID', columns='Name', fill_value=0)
@@ -54,14 +60,11 @@ rating_pred_matrix = pd.DataFrame(data=rating_pred, index=pivot_table.index, col
 try:
     rating_pred_2 = predict_rating_top_n(pivot_table.values, df_sim.values, n=20)
     rating_pred_matrix = pd.DataFrame(data=rating_pred_2, index=pivot_table.index, columns=pivot_table.columns)
-    #user_rating_id = pivot_table.loc[1, :]
-    #print(user_rating_id[user_rating_id > 0].sort_values(ascending=False)[:20])
+    # user_rating_id = pivot_table.loc[1, :]
+    # print(user_rating_id[user_rating_id > 0].sort_values(ascending=False)[:20])
     unread_list = get_user_unread(pivot_table, 9)
     re_book = recommendation(rating_pred_matrix, 9, unread_list, top_n=10)
     df_re_book = pd.DataFrame(data=re_book.values, index=re_book.index, columns=["pred_score"])
     print(df_re_book)
-
-
 except KeyboardInterrupt:
     print("오류 발생")
-
