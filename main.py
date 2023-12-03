@@ -40,10 +40,10 @@ rating_pred = predict_rating(pivot_table.values, df_sim.values)
 rating_pred_matrix = pd.DataFrame(data=rating_pred, index=pivot_table.index, columns=pivot_table.columns)
 
 try:
-    rating_pred_2 = predict_rating_top_n(pivot_table.values, df_sim.values, n=20)
-    #print("mse: ", mse(rating_pred_2, pivot_table.values))
-    rating_pred_matrix = pd.DataFrame(data=rating_pred_2, index=pivot_table.index, columns=pivot_table.columns)
-    print(rating_pred_matrix.head())
+    #rating_pred_2 = predict_rating_top_n(pivot_table.values, df_sim.values, n=20)
+    #rating_pred_matrix = pd.DataFrame(data=rating_pred_2, index=pivot_table.index, columns=pivot_table.columns)
+    user_rating_id = pivot_table.loc[1, :]
+    user_rating_id[user_rating_id > 0].sort_values(ascending=False)[:10]
 except KeyboardInterrupt:
     print("오류가 발생")
 
